@@ -2,7 +2,7 @@
 
 Setup:
 1. Clone the repository
-2. Install the requirements 
+2. Install the requirements with python==3.9.12
 3. Set the OpenAI API key in utils/config.py
 4. Run main.py
 
