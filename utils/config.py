@@ -1,1 +1,0 @@
-key = # Paste your OpenAI API key here

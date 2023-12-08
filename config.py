@@ -1,0 +1,1 @@
+key = # Paste you OpenAI key here

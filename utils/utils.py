@@ -21,7 +21,7 @@ def chat_with_gpt(history, prompt):
 def send_first_message(msg):
 	return "Product Information:" + json.dumps(msg) + "Please help me answer the following questions"
 
-def record_and_transcribe(filename="output.mp3", duration=5, sample_rate=44100):
+def record_and_transcribe(filename="output/output.mp3", duration=5, sample_rate=44100):
     print("Recording...")
     audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
     sd.wait()
