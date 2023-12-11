@@ -2,12 +2,21 @@ from utils.barcode_detection import barcode_scanner
 from utils.product_info import get_product_json
 from utils.utils import send_first_message, chat_with_gpt, text_to_audio, record_and_transcribe
 import time
+from roboflow import Roboflow
+
+def load_model():
+    rf = Roboflow(api_key="vQ6l6Ky2d9IQN5H6sNDH")
+    project = rf.workspace().project("barcodes-zmxjq")
+    model = project.version(4).model
+    return model
+
+model=load_model()
 
 welcomeMessage = "Hello, please start scanning the product"
 
 text_to_audio(welcomeMessage)
 
-barcode, msg = barcode_scanner()
+barcode, msg = barcode_scanner(model)
 print(barcode, msg)
 if barcode is None:
     text_to_audio(barcodeError)
@@ -35,8 +44,6 @@ while True:
     print(response)
 
     text_to_audio(response)
-
-
 
 
 

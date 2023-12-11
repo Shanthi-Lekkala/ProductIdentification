@@ -12,3 +12,4 @@ openai-whisper==20231106
 zxing-cpp==2.1.0
 sounddevice==0.4.6
 roboflow==1.1.12
+pyzxing==1.0.2

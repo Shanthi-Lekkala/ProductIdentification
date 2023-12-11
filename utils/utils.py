@@ -42,19 +42,6 @@ def text_to_audio(text):
     subprocess.call(['say', text])
 
 
-# def draw_bbox(image, x, y, width, height):
-
-#     # Calculate the top-left and bottom-right points of the rectangle based on the center
-#     x_top_left = int(x - width / 2)
-#     y_top_left = int(y - height / 2)
-#     x_bottom_right = int(x + width / 2)
-#     y_bottom_right = int(y + height / 2)
-
-#     # Draw a rectangle on the image
-#     cv2.rectangle(image, (x_top_left, y_top_left), (x_bottom_right, y_bottom_right), (255, 0, 0), 2)
-
-    return image
-
 
 def draw_bbox(image, x1, x2, y1, y2, barcode_text):
     cv2.rectangle(image, (x1, y1), (x2, y2), (255, 0, 0), 2)
