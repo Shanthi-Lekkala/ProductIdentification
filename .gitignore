@@ -3,3 +3,4 @@ output/*.mp3
 *.pyc
 .DS_Store
 settings.py
+dummy.py
