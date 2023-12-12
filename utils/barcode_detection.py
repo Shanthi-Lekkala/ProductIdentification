@@ -3,6 +3,7 @@ from detection.mser import find_barcodes, get_barcode
 import numpy as np
 import matplotlib.pyplot as plt
 from pyzxing import BarCodeReader
+from statistics import mode
 
 
 def draw_bbox(image, x1, x2, y1, y2, barcode_text):
@@ -31,7 +32,7 @@ def get_rotation_angle(image):
     blurred = cv2.GaussianBlur(image, (5, 5), 0)
     edges = cv2.Canny(blurred, 50, 150)
 
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, threshold=100)
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, threshold=50)
     angles = []
     if lines is not None:
         for line in lines:
@@ -39,14 +40,26 @@ def get_rotation_angle(image):
             angle = np.degrees(theta)
             angles.append(int(angle))
 
-    most_angle = np.bincount(np.array(angles)).argmax() if len(angles)>0 else None
+    most_angle = mode(angles) if len(angles)>0 else None
     return most_angle
 
 def rotate_image(image, angle):
     height, width = image.shape[:2]
 
     rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1)
-    rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
+
+    # Calculate the size of the rotated image
+    new_width = int(np.ceil(width * abs(np.cos(np.radians(angle)))) + np.ceil(height * abs(np.sin(np.radians(angle)))))
+    new_height = int(np.ceil(width * abs(np.sin(np.radians(angle)))) + np.ceil(height * abs(np.cos(np.radians(angle)))))
+
+    # Update the rotation matrix to take into account the new image size
+    rotation_matrix[0, 2] += (new_width - width) / 2
+    rotation_matrix[1, 2] += (new_height - height) / 2
+
+    # Apply the rotation without cropping
+    rotated_image = cv2.warpAffine(image, rotation_matrix, (new_width, new_height), borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+
+    # rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
 
     # Display the original and rotated images
     plt.imshow(rotated_image)
@@ -67,6 +80,7 @@ def process_frame(model, frame):
 
     angle = get_rotation_angle(roi)
     if angle is None: return None, frame
+    print(angle)
     rotated_barcode = rotate_image(roi, angle)
 
     reader = BarCodeReader()
@@ -76,6 +90,7 @@ def process_frame(model, frame):
     # barcode, bbox = get_barcode(frame)
     # print(barcode)
     barcode = str(barcode[0]['raw'].decode('utf-8'))
+    print(barcode)
     frame_with_barcode = draw_bbox(frame, x1, x2, y1, y2, barcode)
     return barcode, frame_with_barcode
     # Display the frame with detected barcodes
@@ -106,7 +121,7 @@ def barcode_scanner(model):
             barcode, frame=process_frame(model, frame)
             if barcode: 
                 new_barcode = barcode
-                break
+                # break
         cv2.imshow("Barcode Detection", frame)
  
         # Break the loop if 'q' key is pressed

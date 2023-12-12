@@ -1,4 +1,4 @@
-## Product identification
+## Shelfhelp - Fall 2023 Product identification
 
 Setup:
 1. Clone the repository
@@ -13,4 +13,3 @@ Process:
 4. Further the responses are converted to audio and the process can be repeated.
 
 ![Pipeline](images/Pipeline_diagram.png)
-
