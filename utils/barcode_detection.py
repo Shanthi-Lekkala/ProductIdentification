@@ -62,9 +62,9 @@ def rotate_image(image, angle):
     # rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
 
     # Display the original and rotated images
-    plt.imshow(rotated_image)
-    plt.axis('off')  # Turn off axis labels
-    plt.show()
+    # plt.imshow(rotated_image)
+    # plt.axis('off')  # Turn off axis labels
+    # plt.show()
 
     return rotated_image
 
@@ -103,11 +103,23 @@ def process_frame(model, frame):
 
 def barcode_scanner(model):
     new_barcode = ""
-    cap = cv2.VideoCapture(0)
+
+    video_path = 'test_samples/test_video.mp4'  # Replace with the path to your video file
+    cap = cv2.VideoCapture(video_path)
+    # cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         return None, "Error: Could not open camera."
 
+    # Get video properties
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)+0.5)
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)+0.5)
+    print(width, height)
+    # Create a VideoWriter object to save the processed video
+    output_path = 'output/output_video.avi'  # Replace with your desired output path
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out_vid = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
     frame_count = 0
     while True:
         ret, frame = cap.read()
@@ -117,12 +129,16 @@ def barcode_scanner(model):
         frame_count += 1
 
         # Process every 30 frames
-        if frame_count % 30 == 0:
-            barcode, frame=process_frame(model, frame)
-            if barcode: 
-                new_barcode = barcode
-                # break
-        cv2.imshow("Barcode Detection", frame)
+        # if frame_count % 30 == 0:
+        barcode, frame=process_frame(model, frame)
+        if barcode: 
+            new_barcode = barcode
+            # cv2.imwrite("test_samples/"+str(frame_count)+".jpg", frame)
+            # break
+        # cv2.imshow("Barcode Detection", frame)
+        # print(frame.shape)
+        out_vid.write(frame)
+        
  
         # Break the loop if 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -130,6 +146,7 @@ def barcode_scanner(model):
 
     # Release the video capture object and close all windows
     cap.release()
+    out_vid.release()
     cv2.destroyAllWindows()
 
     return new_barcode, "Success"
