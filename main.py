@@ -16,14 +16,24 @@ welcomeMessage = "Hello, please start scanning the product"
 
 text_to_audio(welcomeMessage)
 try:
-    barcode, msg = barcode_scanner(model)
-    print(barcode, msg)
-    if barcode is None:
-        text_to_audio("Barcode not found")
-
-    product_info = get_product_json(barcode)
-    text_to_audio("You are holding " + product_info['name'])
-    text_to_audio("")
+    live_video = False # Set it to True to test on a live video
+    product_no = 1
+    while True:
+        barcode, msg = barcode_scanner(model, live_video, product_no, False)
+        print(barcode, msg)
+        if not barcode:
+            text_to_audio("Barcode not found, please scan again.")
+            continue
+        product_info = get_product_json(barcode)
+        text_to_audio("You are holding {}, say continue to keep looking".format(product_info['name']))
+        print(product_info['name'])
+        user_input = record_and_transcribe()
+        print(user_input)
+        if "continue" in user_input.lower(): 
+            product_no += 1
+            continue
+        text_to_audio("You can use this interface to query any information about the product")
+        break
     input_message = "Initiate"
 
     user_input = send_first_message(product_info)
@@ -45,7 +55,7 @@ try:
 
         text_to_audio(response)
 
-except Expection as e:
+except Exception as e:
     print(f"An unexpected error occurred: {e}")
 
 

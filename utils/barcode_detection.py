@@ -69,7 +69,7 @@ def rotate_image(image, angle):
     return rotated_image
 
 def process_frame(model, frame):
-    pred = model.predict(frame, confidence=40, overlap=30).json()['predictions']
+    pred = model.predict(frame, confidence=60, overlap=30).json()['predictions']
     if len(pred)<=0: return None, frame
 
     bbox = (pred[0]['x'], pred[0]['y'], pred[0]['width'], pred[0]['height'])
@@ -80,77 +80,75 @@ def process_frame(model, frame):
 
     angle = get_rotation_angle(roi)
     if angle is None: return None, frame
-    print(angle)
     rotated_barcode = rotate_image(roi, angle)
 
     reader = BarCodeReader()
     barcode = reader.decode_array(rotated_barcode)
 
     if not barcode or 'raw' not in barcode[0]: return None, frame
-    # barcode, bbox = get_barcode(frame)
-    # print(barcode)
+
     barcode = str(barcode[0]['raw'].decode('utf-8'))
-    print(barcode)
     frame_with_barcode = draw_bbox(frame, x1, x2, y1, y2, barcode)
-    return barcode, frame_with_barcode
+
     # Display the frame with detected barcodes
-    # cv2.imshow("Barcode Detection", frame_with_barcode)
-    # if new_barcode!=barcode:
-    #     # print(barcode)
-    #     new_barcode = barcode
-    # # break
+    cv2.namedWindow("Barcode Detection", cv2.WINDOW_NORMAL)  # Use this line before cv2.imshow
+    cv2.imshow("Barcode Detection", frame_with_barcode)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    # plt.imshow(frame_with_barcode)
+    # plt.axis('off')  # Turn off axis labels
+    plt.show()
+
+    return barcode, frame_with_barcode
+
     
 
-def barcode_scanner(model):
+def barcode_scanner(model, live_video, product_no, save_output=False):
     new_barcode = ""
-
-    video_path = 'test_samples/test_video.mp4'  # Replace with the path to your video file
+    video_path = "test_samples/product_{}.mov".format(product_no) if not live_video else 0
     cap = cv2.VideoCapture(video_path)
-    # cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         return None, "Error: Could not open camera."
 
-    # Get video properties
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)+0.5)
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)+0.5)
-    print(width, height)
-    # Create a VideoWriter object to save the processed video
-    output_path = 'output/output_video.avi'  # Replace with your desired output path
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out_vid = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    if save_output:
+        # Get video properties
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)+0.5)
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)+0.5)
+
+        # Create a VideoWriter object to save the processed video
+        output_path = "output/product_{}.MOV".format(product_no)  # Replace with your desired output path
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out_vid = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+
     frame_count = 0
     while True:
         ret, frame = cap.read()
         if not ret:
-            return None, "Error: Couldn't read frame."
-            # break
+            return new_barcode, "Error: Couldn't read frame."
         frame_count += 1
 
         # Process every 30 frames
-        # if frame_count % 30 == 0:
-        barcode, frame=process_frame(model, frame)
-        if barcode: 
-            new_barcode = barcode
-            # cv2.imwrite("test_samples/"+str(frame_count)+".jpg", frame)
-            # break
+        if frame_count % 30 == 0:
+            barcode, frame=process_frame(model, frame)
+            if barcode: 
+                new_barcode = barcode
+                break
+
         # cv2.imshow("Barcode Detection", frame)
-        # print(frame.shape)
-        out_vid.write(frame)
+        if save_output: out_vid.write(frame)
         
- 
         # Break the loop if 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     # Release the video capture object and close all windows
     cap.release()
-    out_vid.release()
+    if save_output: out_vid.release()
     cv2.destroyAllWindows()
 
     return new_barcode, "Success"
-    # start_conversation(new_barcode)
 
 
 if __name__ == "__main__":
