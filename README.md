@@ -71,12 +71,36 @@ Setup:
 Experiments done:
 1. Detecting Barcode with Image processing techniques: 
   - Compute Gradient magnitude representations of the image in both x and y directions, apply thresholding, apply morphological operation to close gaps between bars, find countours and draw a rectangle.
-  Observations:
-  1. This method can detect barcodes very fast, but they might not be accurate.
-  2. It can also detect angled barcodes and give us a rotated rectangle
+  - Observations:
+    1. This method can detect barcodes very fast, but they might not be accurate.
+    2. It can also detect angled barcodes and give us a rotated rectangle
 2. Detection based on MSER:
-  - It takes advantage of Maximal Stable Extremal Region (MSER) system introduced by _"Robust wide
-baseline stereo from maximally stable extremal regions"_
+  - It takes advantage of Maximal Stable Extremal Region (MSER) system introduced by _"Robust wide baseline stereo from maximally stable extremal regions"_
+  - Observations:
+    1. The detection is more robust when compared to the above method
+    2. It does not detect and mark the entire barcode
+3. Pretrained Tiny yolo model:
+  - Used a pretrained model from github and analysed its performance. 
+  - It's inference time is less in comparision to yolo model as it is a lighter model
+  - Performance of the model was not great in case of images with rotated barcodes
+4. YOLOv5 model trained on ArteLab Barcode dataset
+  - This model is trained from scratch using darkent yolov5 model
+  - Converted the dataset to yolo trainable format and trained the model. The mAP of the final model is 54.8 and its performance is low when the barcode is at angle.
+5. Pretrained model from Roboflow for barcode detection 
+  - Loaded a pretrained model from roboflow to detect barcodes
+  - Its performance is the best in comparision to all the other models.
+  - It works good on images with rotated barcodes as well. 
+  - The inference time is high compared to tiny yolo model. So, we are running one frame in every 30.
 
+Here are the results showing images with barcodes of few products in the order of Image processing methos, MSER method, trained YOLO method and pretrained roboflow API method.
 
+![Test_1](images/test_1.png)
+![Test_1](images/test_2.png)
+![Test_1](images/test_4.png)
+![Test_1](images/test_5.png)
 
+Observations:
+1. Result from image processing methos are not highly reliable as it can even detect lines on the product to be a barcode as shown in the last example
+2. MSER method is not detecting the barcode completely, while pyzbar can decode the barcode this way it is difficult in cases like example 1, where rotated barcode is detected as barely a line
+3. YOLOv5 model trained from scratch on ArteLab dataset is not returning results as expected, in few images it is not able to detect the barcode like the rotated one and in some cases it wrongly chooses product info area to be a barcode like in example 3.
+4. Out of all the methods tried and tested, roboflow pretrained model API is performing the best producing results as expected. It is able to detect rotated barcode like in example 1 as well as vertical barcodes like in example 4
