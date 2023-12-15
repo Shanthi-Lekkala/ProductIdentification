@@ -1,5 +1,4 @@
 *.jpeg
-*.png
 output/*.mp3
 *.pyc
 .DS_Store
