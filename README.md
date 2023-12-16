@@ -1,4 +1,4 @@
-## Shelfhelp - Fall 2023 Product identification
+# Shelfhelp - Fall 2023 Product identification
 
 
 This repository contains experiments done on visual representation learning models and Barcode detection. Here are the list of things which will be elaborated further below
@@ -12,7 +12,7 @@ This repository contains experiments done on visual representation learning mode
 
 As a part of my independent study for Fall 2023, I worked with Shivendra Agrawal who is currently working towards developing a smartcane to help visually impaired and blind people to guide them in grocery shopping.
 
-During my independent study, I tested visual representation learning models, developed barcode detector and built an end to end pipeline which takes in live video input to detect the barcode and further answer queries about the product. In this process, I read research papers and blogs about MAE, PAWS for visual representation learning and few papers on barcode detection. Created a pipeline for identifying the product and querying about the same, used ChatGPT and Openai whispers in my project for communication.
+During my independent study, I tested different detection models, developed barcode detector and built an end to end pipeline which takes in live video input to detect the barcode and further answer queries about the product. In this process, I read research papers, few blogs and have seen few youtube videos on barcode detection. Created a pipeline for identifying the product and querying about the same, used ChatGPT and Openai whispers in my project for communication.
 
 ## Papers:
 - ![Real-time Barcode Detection in the Wild](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7045893)
@@ -130,13 +130,13 @@ We need a decoder to convert the barcode image to numerical values. After testin
 
 The barcode is just a number, but we need to used a barcode database to retrieve information related to the barcode. Here, are few open databses that can be found online
 
-  1. Openfoodfacts Database:
-     - Contains Allergens, ingredients, nutrition facts, food category, product size, type of food 
-     - Does not contain pricing information, packaging, directions of use
-  2. USDA - United States Department of Agriculture:
+1. Openfoodfacts Database:
+    - Contains Allergens, ingredients, nutrition facts, food category, product size, type of food 
+    - Does not contain pricing information, packaging, directions of use
+2. USDA - United States Department of Agriculture:
     - Contains brand owner, ingredients, food category and nutrition facts
     - Does not contain allergens, product size, no. of servings, type of food
-  3. UPC lookup database:
+3. UPC lookup database:
     - Contains title, description(ingredients), brand, weight, food category, offered prices at different stores
     - Does not contain Nutrition facts, allergens, no. of servings, type of food
 
