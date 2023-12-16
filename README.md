@@ -128,6 +128,21 @@ We need a decoder to convert the barcode image to numerical values. After testin
 
 ## Product Information retrieval
 
+The barcode is just a number, but we need to used a barcode database to retrieve information related to the barcode. Here, are few open databses that can be found online
+
+  1. Openfoodfacts Database:
+     - Contains Allergens, ingredients, nutrition facts, food category, product size, type of food 
+     - Does not contain pricing information, packaging, directions of use
+  2. USDA - United States Department of Agriculture:
+    - Contains brand owner, ingredients, food category and nutrition facts
+    - Does not contain allergens, product size, no. of servings, type of food
+  3. UPC lookup database:
+    - Contains title, description(ingredients), brand, weight, food category, offered prices at different stores
+    - Does not contain Nutrition facts, allergens, no. of servings, type of food
+
+In this product, I'm using Openfoodfacts database API i.e. https://world.openfoodfacts.org/api/v0/product/015700162552.json to retrieve information as json and it is further refined to store only required information.
+
+
 ## ChatGPT-Powered Product Q&A
 What if a person wants to know more about the product before deciding whether or not to buy the product?
 Here are few questions one might be curious to know about before deciding:
@@ -148,4 +163,5 @@ As it is difficult to read or type in the question for visually impaired people,
 ## Future work:
 - The working of the current model is not as fast, it takes almost a 1/2 sec to process a frame, due to which I'm processing one frame in every 30 frames i.e. 1 frame in one sec. Though the chances of missing the barcode are low as we are processing every 1sec frame and it is expected that the person turns the product slowly. Having a faster running model would speed up the process by n times. So, I would still look for a better model with higher processing speed.
 - The current text to audio feature generates very artificial sound and sometimes it is even difficult to understand what it is saying. So, in future it would be better if we can improve this by adding a more realistic human like voice to the system for responding
-
+- In future, we can check the reliability of pricing information provided in UPC lookup database and add it to the product if reliable to ensure the person has easy access to the product information as well
+- I have tested the product mostly on either images and videos taken capture by phone or those downloaded from online. It would be interesting to test the robustness of the model in realtime
